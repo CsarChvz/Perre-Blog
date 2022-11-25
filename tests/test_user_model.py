@@ -1,5 +1,6 @@
 import unittest
 from app.models import User
+from app.models import Permission
 
 class UserModelTestCase(unittest.TestCase):
     def test_password_setter(self):
@@ -20,3 +21,11 @@ class UserModelTestCase(unittest.TestCase):
         u = User(password='cat')
         u2 = User(password='cat')
         self.assertTrue(u.password_hash != u2.password_hash)
+
+    def test_user_role(self):
+        u = User(email='john@example.com', password='cat')
+        self.assertTrue(u.can(Permission.FOLLOW))
+        self.assertTrue(u.can(Permission.COMMENT))
+        self.assertTrue(u.can(Permission.WRITE))
+        self.assertFalse(u.can(Permission.MODERATE))
+        self.assertFalse(u.can(Permission.ADMIN))

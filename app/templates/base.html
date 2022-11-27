@@ -32,6 +32,9 @@
           Profile
           </a>
         </li>
+        {% if current_user.can(Permission.MODERATE) %}
+          <li><a href="{{ url_for('main.moderate') }}">Moderate Comments</a></li>
+        {% endif %}
         </ul>
     </div>
   </div>

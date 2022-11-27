@@ -18,7 +18,19 @@ def index():
         db.session.commit()
         return redirect(url_for('.index'))
     posts = Post.query.order_by(Post.timestamp.desc()).all()
-    return render_template('index.html', form=form, posts=posts)
+    show_followed = False
+    page = request.args.get('page', type=int)
+    if current_user.is_authenticated:
+        show_followed = bool(request.cookies.get('show_followed', ''))
+    if show_followed:
+        query = current_user.followed_posts
+    else:
+        query = Post.query.all()
+    pagination = query.order_by(Post.timestamp.desc()).paginate(
+        page, per_page=10, error_out=False
+    )
+    posts = pagination.items
+    return render_template('index.html', form=form, posts=posts, show_followed=show_followed, pagination=pagination)
 
 @main.route('/user/<username>')
 def user(username):
@@ -120,6 +132,19 @@ def edit(id):
     form.body.data = post.body
     return render_template('edit_post.html', form=form)
 
+@main.route('/all')
+@login_required
+def show_all():
+    resp = make_response(redirect(url_for('.index')))
+    resp.set_cookie('show_followed', '', max_age=30*24*60*60)
+    return resp
+
+@main.route('/followed')
+@login_required
+def show_followed():
+    resp = make_response(redirect(url_for('.index')))
+    resp.set_cookie('show_followed', '1', max_age=30*24*60*60)
+    return resp
 
 @main.route('/follow/<username>')
 @login_required

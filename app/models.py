@@ -3,9 +3,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from . import login_manager
 from itsdangerous.serializer import Serializer
-from flask import current_app
+from flask import current_app, request
 from . import db
 from datetime import datetime
+import hashlib
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -74,6 +76,7 @@ class User(UserMixin ,db.Model):
     password_hash = db.Column(db.String(128))
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     confirmed = db.Column(db.Boolean, default=False)
+    avatar_hash = db.Column(db.String(32))
 
     #Profile Things
     name = db.Column(db.String(64))
@@ -81,6 +84,9 @@ class User(UserMixin ,db.Model):
     about_me = db.Column(db.Text())
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
     last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
+
+    # Posts
+    posts = db.relationship('Post', backref='author', lazy='dynamic')
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -90,6 +96,10 @@ class User(UserMixin ,db.Model):
             if self.role is None:
                 self.role = Role.query.filter_by(default=True).first()
 
+        if self.email is not None and self.avatar_hash is None:
+            self.avatar_hash = self.gravatar_hash()
+
+        
     def __repr__(self):
         return '<User %r>' % self.username
 
@@ -133,9 +143,44 @@ class User(UserMixin ,db.Model):
         db.session.add(self)
         db.session.commit()
 
+    def gravatar(self, size=100, default='identicon', rating='g'):
+        url = 'http://www.gravatar.com/avatar'
+        hash = hashlib.md5(self.email.encode('utf-8')).hexdigest()
+        return '{url}/{hash}?s={size}&d={default}&r={rating}'.format(
+            url=url, hash=hash, size=size, default=default, rating=rating)
+
+    def gravatar_hash(self):
+        return hashlib.md5(self.email.lower().encode('utf-8')).hexdigest()
+
+    
+    def change_email(self, token):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token.encode('utf-8'))
+        except:
+            return False
+        if data.get('change_email') != self.id:
+            return False
+        new_email = data.get('new_email')
+        if new_email is None:
+            return False
+        if self.query.filter_by(email=new_email).first() is not None:
+            return False
+        self.email = new_email
+        self.avatar_hash = self.gravatar_hash()
+        db.session.add(self)
+        return True
 class Permission:
     FOLLOW = 1
     COMMENT = 2
     WRITE = 4
     MODERATE = 8
     ADMIN = 16
+
+class Post(db.Model):
+    __tablename__ = 'posts'
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.Text)
+    timestamp = db.Column(db.DateTime,index=True,default=datetime.utcnow)
+    author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+

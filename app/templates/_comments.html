@@ -24,10 +24,12 @@
             {% if moderate %}
                 <br>
                 {% if comment.disabled %}
-                <a class="btn btn-default btn-xs" href="{{ url_for('.moderate_enable', id=comment.id, page=page) }}">Enable</a>
+                <a class="btn btn-outline-primary my-3" href="{{ url_for('.moderate_enable', id=comment.id, page=page) }}">Enable</a>
                 {% else %}
-                <a class="btn btn-danger btn-xs" href="{{ url_for('.moderate_disable', id=comment.id, page=page) }}">Disable</a>
+                <a class="btn btn-outline-warning my-3" href="{{ url_for('.moderate_disable', id=comment.id, page=page) }}">Disable</a>
                 {% endif %}
+                <a class="btn btn-outline-danger" href="{{ url_for('.moderate_delete', id=comment.id, page=page) }}">Delete</a>
+                <a class="btn btn-outline-info">Modificar</a>
             {% endif %}
         </div>
     </li>

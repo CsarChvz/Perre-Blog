@@ -31,6 +31,7 @@ def index():
     posts = pagination.items
     return render_template('index.html', form=form, posts=posts,
                            show_followed=show_followed, pagination=pagination)
+
 @main.route('/user/<username>')
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
@@ -69,6 +70,7 @@ def edit_profile():
 @login_required
 @admin_required
 def edit_profile_admin(id):
+    print(id)
     user = User.query.get_or_404(id)
     form = EditProfileAdminForm(user=user)
     if form.validate_on_submit():
@@ -92,6 +94,17 @@ def edit_profile_admin(id):
     form.about_me.data = user.about_me
     return render_template('edit_profile.html', form=form, user=user)
     
+@main.route('/delete-user/<int:id>', methods=['POST'])
+@login_required
+@admin_required
+def delete_user_admin(id):
+    user = User.query.get_or_404(id)
+    username = user.username
+    db.session.delete(user)
+    db.session.commit()
+    flash('El usuario {} ha sido eliminado'.format(username))
+    return redirect(url_for('main.admin_crud'))
+
 @main.route('/post/<int:id>', methods=['GET', 'POST'])
 def post(id):
     post = Post.query.get_or_404(id)
@@ -243,4 +256,27 @@ def moderate_disable(id):
     db.session.add(comment)
     db.session.commit()
     return redirect(url_for('.moderate', page=request.args.get('page', 1, type=int)))
+
+@main.route('/moderate/delete/<int:id>')
+@login_required
+@permission_required(Permission.MODERATE)
+def moderate_delete(id):
+    comment = Comment.query.get_or_404(id)
+    nombreAutor = comment.author.username
+    db.session.delete(comment)
+    db.session.commit()
+    flash("El comentario de %s ha sido eliminado." % nombreAutor)
+    return redirect(url_for('.moderate', page=request.args.get('page', 1, type=int)))
+
+@main.route('/admin/crudUsers')
+@login_required
+@admin_required
+def admin_crud():
+    # Paginate users
+    page = request.args.get('page', 1, type=int)
+    pagination = User.query.order_by(User.member_since.asc()).paginate(page=page, per_page=10, error_out=False)
+    users = pagination.items
+    titles = ('username', 'Email', 'Role', 'Edit')
+    return render_template('admin/users.html', users=users, pagination=pagination, page=page)
+
 

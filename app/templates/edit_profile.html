@@ -1,11 +1,12 @@
 {% extends "base.html" %}
-{% import "bootstrap/form.html" as wtf %}
+{% import "bootstrap4/form.html" as wtf %}
 {% block title %}Editar perfi{% endblock %}
 {% block page_content %}
 <div class="page-header">
 <h1>Editar Perfil</h1>
 </div>
 <div class="col-md-4">
+    {{ form.csrf_token() }}
     {{ wtf.render_form(form) }}
 </div>
 {% endblock %}

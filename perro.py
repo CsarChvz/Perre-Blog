@@ -1,5 +1,5 @@
 import os 
-from app import create_app, db
+from app import create_app, db, socketio
 from app.models import User, Role, Permission
 from flask_migrate import Migrate
 import click
@@ -24,4 +24,4 @@ def profile(length, profile_dir):
     from werkzeug.middleware.profiler import ProfilerMiddleware
     app.wsgi_app = ProfilerMiddleware(app.wsgi_app, restrictions=[length],
     profile_dir=profile_dir)
-    app.run(debug=False)
+    socketio.run(app=app, debug=True)

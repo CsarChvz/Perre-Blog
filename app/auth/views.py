@@ -28,6 +28,7 @@ def logout():
     flash('Has cerrado sesión.')
     return redirect(url_for('main.index'))
 
+
 @auth.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegistrationForm()
@@ -40,8 +41,9 @@ def register():
 
         token = user.generate_confirmation_token()
 
-        send_email(user.email, 'Confirm Your Account',
-            'auth/email/confirm', user=user, token=token)
+        #send_email(user.email, 'Confirm Your Account',
+            #'auth/email/confirm', user=user, token=token)
+
         flash('Un correo de confirmación ha sido enviado a tu correo.')
         return redirect(url_for('main.index'))
     return render_template('auth/register.html', form=form)

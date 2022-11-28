@@ -183,6 +183,9 @@ class User(UserMixin ,db.Model):
     def gravatar_hash(self):
         return hashlib.md5(self.email.lower().encode('utf-8')).hexdigest()
 
+    def generate_email_change_token(self, new_email, expiration=3600):
+        s = Serializer(current_app.config['SECRET_KEY'])
+        return s.dumps({'change_email': self.id, 'new_email': new_email})
     
     def change_email(self, token):
         s = Serializer(current_app.config['SECRET_KEY'])

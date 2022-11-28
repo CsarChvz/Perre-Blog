@@ -29,7 +29,7 @@
                 <a class="btn btn-outline-warning my-3" href="{{ url_for('.moderate_disable', id=comment.id, page=page) }}">Disable</a>
                 {% endif %}
                 <a class="btn btn-outline-danger" href="{{ url_for('.moderate_delete', id=comment.id, page=page) }}">Delete</a>
-                <a class="btn btn-outline-info">Modificar</a>
+                <a class="btn btn-outline-info" href="{{ url_for('.moderate_edit', id=comment.id, page=page) }}">Modificar</a>
             {% endif %}
         </div>
     </li>

@@ -2,11 +2,12 @@ from datetime import datetime
 from flask import render_template, session, redirect, url_for, flash, abort, request, current_app, make_response
 from . import main
 from .forms import NameForm, EditProfileForm, EditProfileAdminForm, PostForm, CommentForm, FollowForm, AddNewUserForm
-from .. import db
+from .. import db, socketio
 from flask_login import login_required, current_user
 from ..models import User, Role, Post, Permission, Comment
 from ..decorators import admin_required, permission_required
 from flask_pagedown import PageDown
+from flask_socketio import emit, send
 
 @main.route('/', methods=['GET', 'POST'])
 def index():
@@ -32,7 +33,7 @@ def index():
     return render_template('index.html', form=form, posts=posts,
                            show_followed=show_followed, pagination=pagination)
 
-@main.route('/user/<username>')
+@main.route('/user/<username>', methods=['GET', 'POST'])
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
     form = FollowForm()
@@ -268,6 +269,21 @@ def moderate_delete(id):
     flash("El comentario de %s ha sido eliminado." % nombreAutor)
     return redirect(url_for('.moderate', page=request.args.get('page', 1, type=int)))
 
+@main.route('/moderate/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+@permission_required(Permission.MODERATE)
+def moderate_edit(id):
+    comment = Comment.query.get_or_404(id)
+    form = CommentForm()
+    if form.validate_on_submit():
+        comment.body = form.body.data
+        db.session.add(comment)
+        db.session.commit()
+        flash('El comentario ha sido editado.')
+        return redirect(url_for('.moderate', page=request.args.get('page', 1, type=int)))
+    form.body.data = comment.body
+    return render_template('edit_comment.html', form=form)
+
 @main.route('/admin/crudUsers', methods=['GET','POST'])
 @login_required
 @admin_required
@@ -292,4 +308,24 @@ def admin_crud():
 
     titles = ('Username', 'Email', 'Role', 'Edit')
     return render_template('admin/users.html', users=users, pagination=pagination, page=page, form=formAdd)
+
+
+
+# Socket Io
+@main.route('/chat')
+@login_required
+def chat():
+    return render_template('chat.html')
+
+@socketio.on('connect', namespace='/chat')
+def on_connect():
+    if current_user.is_anonymous:
+        return False
+    emit('welcome', {'username': current_user.id})
+    
+@socketio.on('disconnect', namespace='/chat')
+def on_disconnect():
+    if current_user.is_anonymus:
+        return False
+    emit('welcome', {'username': current_user.id})
 

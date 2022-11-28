@@ -38,6 +38,8 @@ def create_app(config_name):
     from .auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
 
+    from .chat import chat as chat_blueprint
+    app.register_blueprint(chat_blueprint, url_prefix='/chat')
 
     
     return app

@@ -312,20 +312,24 @@ def admin_crud():
 
 
 # Socket Io
-@main.route('/chat')
+@main.route('/chate')
 @login_required
 def chat():
     return render_template('chat.html')
 
-@socketio.on('connect', namespace='/chat')
+@socketio.on('connect', namespace='/chate')
 def on_connect():
     if current_user.is_anonymous:
         return False
     emit('welcome', {'username': current_user.id})
     
-@socketio.on('disconnect', namespace='/chat')
+@socketio.on('disconnect', namespace='/chate')
 def on_disconnect():
     if current_user.is_anonymus:
         return False
     emit('welcome', {'username': current_user.id})
 
+@socketio.on('event')
+def event(json):
+    print("Estamos en evento"+json)
+    emit('event', {'username': current_user.username})

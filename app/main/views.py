@@ -1,7 +1,7 @@
 from datetime import datetime
 from flask import render_template, session, redirect, url_for, flash, abort, request, current_app, make_response
 from . import main
-from .forms import NameForm, EditProfileForm, EditProfileAdminForm, PostForm, CommentForm, FollowForm
+from .forms import NameForm, EditProfileForm, EditProfileAdminForm, PostForm, CommentForm, FollowForm, AddNewUserForm
 from .. import db
 from flask_login import login_required, current_user
 from ..models import User, Role, Post, Permission, Comment
@@ -276,7 +276,8 @@ def admin_crud():
     page = request.args.get('page', 1, type=int)
     pagination = User.query.order_by(User.member_since.asc()).paginate(page=page, per_page=10, error_out=False)
     users = pagination.items
+    form = AddNewUserForm()
     titles = ('username', 'Email', 'Role', 'Edit')
-    return render_template('admin/users.html', users=users, pagination=pagination, page=page)
+    return render_template('admin/users.html', users=users, pagination=pagination, page=page, form=form)
 
 

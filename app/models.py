@@ -86,7 +86,8 @@ class User(UserMixin ,db.Model):
     last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
 
     # Posts
-    posts = db.relationship('Post', backref='author', lazy='dynamic')
+    posts = db.relationship('Post', cascade="all,delete",
+     backref='author', lazy='dynamic')
 
     # Follows
 
@@ -102,7 +103,7 @@ class User(UserMixin ,db.Model):
                                 cascade='all, delete-orphan')
 
     #Commentarios
-    comments = db.relationship('Comment', backref='author', lazy='dynamic')
+    comments = db.relationship('Comment', cascade="all,delete",backref='author', lazy='dynamic')
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -251,7 +252,7 @@ class Post(db.Model):
     body = db.Column(db.Text)
     timestamp = db.Column(db.DateTime,index=True,default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    comments = db.relationship('Comment', backref='post', lazy='dynamic')
+    comments = db.relationship('Comment', cascade="all,delete",backref='post', lazy='dynamic')
 
 class Comment(db.Model):
     __tablename__ = 'comments'

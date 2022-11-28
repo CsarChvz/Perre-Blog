@@ -1,6 +1,6 @@
 # Forms
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, TextAreaField, BooleanField, SelectField
+from wtforms import StringField, SubmitField, TextAreaField, BooleanField, SelectField, PasswordField
 from wtforms.validators import DataRequired, Length, Email, Regexp, ValidationError
 from ..models import User, Role
 from flask_pagedown.fields import PageDownField
@@ -17,8 +17,7 @@ class EditProfileForm(FlaskForm):
 
 
 class EditProfileAdminForm(FlaskForm):
-    email = StringField('Email', validators=[DataRequired(), Length(1, 64),
-                                             Email()])
+    email = StringField('Email', validators=[DataRequired(), Length(1, 64),Email()])
     username = StringField('Username', validators=[
         DataRequired(), Length(1, 64),
         Regexp('^[A-Za-z][A-Za-z0-9_.]*$', 0,
@@ -66,3 +65,9 @@ class FollowForm(FlaskForm):
 
 class UnfollowForm(FlaskForm):
     submit = SubmitField('Unfollow')
+
+class AddNewUserForm(FlaskForm):
+    username = StringField('Username', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Length(1, 64),Email()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField("Agregar nuevo usuario")

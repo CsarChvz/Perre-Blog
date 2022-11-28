@@ -17,7 +17,7 @@
 {% include '_comments.html' %}
 {% if pagination %}
 <div class="pagination">
-    {{ render_pagination(pagination, '.post', fragment='#comments', id=posts[0].id) }}
+    {{ render_pagination(pagination, 'main.post', fragment='#comments', id=posts[0].id) }}
 
 </div>
 

@@ -70,4 +70,5 @@ class AddNewUserForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     email = StringField('Email', validators=[DataRequired(), Length(1, 64),Email()])
     password = PasswordField('Password', validators=[DataRequired()])
+    confirmed = BooleanField('Cuenta Confirmada')
     submit = SubmitField("Agregar nuevo usuario")

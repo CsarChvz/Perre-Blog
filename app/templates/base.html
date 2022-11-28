@@ -18,19 +18,6 @@
         {% endblock %}
     </head>
     <body>
-        <!-- <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <div class="navbar-nav mr-auto">
-                {{ render_nav_item('main.index', 'Home') }}
-            </div>
-            <div class="nav navbar-nav-navbar-right">
-                {% if current_user.is_authenticated %}
-                    {{ render_nav_item('.user', 'Profile', username=current_user.username) }}
-                    {{ render_nav_item('auth.logout', 'Logout') }}
-                {% else %}
-                    {{ render_nav_item('auth.login', 'Login') }}
-                    {{ render_nav_item('auth.register', 'Register') }}
-                {% endif %}
-            </div> -->
             <nav class="navbar navbar-expand-lg navbar-light bg-light">
                 <a class="navbar-brand" href="{{ url_for('main.index') }}">PerreBlog</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">

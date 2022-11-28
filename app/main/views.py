@@ -268,7 +268,7 @@ def moderate_delete(id):
     flash("El comentario de %s ha sido eliminado." % nombreAutor)
     return redirect(url_for('.moderate', page=request.args.get('page', 1, type=int)))
 
-@main.route('/admin/crudUsers')
+@main.route('/admin/crudUsers', methods=['GET','POST'])
 @login_required
 @admin_required
 def admin_crud():
@@ -276,8 +276,20 @@ def admin_crud():
     page = request.args.get('page', 1, type=int)
     pagination = User.query.order_by(User.member_since.asc()).paginate(page=page, per_page=10, error_out=False)
     users = pagination.items
-    form = AddNewUserForm()
-    titles = ('username', 'Email', 'Role', 'Edit')
-    return render_template('admin/users.html', users=users, pagination=pagination, page=page, form=form)
+    formAdd = AddNewUserForm()
+    if formAdd.validate_on_submit():
+        if (formAdd.confirmed == True):
+            confirmed = 1
+            token = user.generate_confirmation_token()
+        user = User(email=formAdd.email.data,
+            username=formAdd.username.data,
+            password=formAdd.password.data, confirmed=formAdd.confirmed.data)
+        
+        db.session.add(user)
+        db.session.commit()
+        flash('Usuario creado correctamente')
+        return redirect(url_for('main.admin_crud'))
 
+    titles = ('Username', 'Email', 'Role', 'Edit')
+    return render_template('admin/users.html', users=users, pagination=pagination, page=page, form=formAdd)
 

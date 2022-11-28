@@ -1,4 +1,5 @@
 {% macro pagination_widget(pagination, endpoint, fragment='') %}
+{% from 'bootstrap4/pagination.html' import render_pagination %}
 <ul class="pagination">
     <li{% if not pagination.has_prev %} class="disabled"{% endif %}>
         <a href="{% if pagination.has_prev %}{{ url_for(endpoint, page=pagination.prev_num, **kwargs) }}{{ fragment }}{% else %}#{% endif %}">

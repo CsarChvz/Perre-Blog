@@ -60,3 +60,9 @@ class PostForm(FlaskForm):
 class CommentForm(FlaskForm):
     body = StringField('Enter your comment', validators=[DataRequired()])
     submit = SubmitField('Submit')
+
+class FollowForm(FlaskForm):
+    submit = SubmitField('Follow')
+
+class UnfollowForm(FlaskForm):
+    submit = SubmitField('Unfollow')

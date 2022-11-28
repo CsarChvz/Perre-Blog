@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 {% import "_macros.html" as macros %}
+{% from 'bootstrap4/nav.html' import render_breadcrumb_item %}
+{% from 'bootstrap4/form.html' import render_form %}
+{% from 'bootstrap4/utils.html' import render_icon %}
+{% from 'bootstrap4/pagination.html' import render_pagination %}
+
 
 {% block title %}Flasky - {{ user.username }}{% endblock %}
 {% block page_content %}
@@ -26,7 +31,7 @@
         </p>
 
         {% if user == current_user %}
-        <a class="btn btn-default" href="{{ url_for('.edit_profile') }}">
+        <a class="btn btn-outline-success my-2" href="{{ url_for('.edit_profile') }}">
         Edit Profile
         </a>
         {% endif %}
@@ -36,7 +41,7 @@
                 {% if not current_user.is_following(user) %}
                 <a href="{{ url_for('.follow', username=user.username) }}" class="btn btn-primary">Follow</a>
                 {% else %}
-                <a href="{{ url_for('.unfollow', username=user.username) }}" class="btn btn-default">Unfollow</a>
+                <a href="{{ url_for('.unfollow', username=user.username) }}" class="btn btn-secondary">Unfollow</a>
                 {% endif %}
             {% endif %}
             <a href="{{ url_for('.followers', username=user.username) }}">Followers: <span class="badge">{{ user.followers.count()  }}</span></a>
@@ -46,17 +51,17 @@
             {% endif %}
         </p>    
         {% if current_user.is_administrator() %}
-        <a class="btn btn-danger"
+        <a class="btn btn-outline-warning"
         href="{{ url_for('.edit_profile_admin', id=user.id) }}">
         Edit Profile [Admin]
         </a>
         {% endif %}
     </div>
 <h3>Posts by {{ user.username }}</h3>
-{% include '_posts.html' %}
 {% if pagination %}
+{% include "_posts.html" %}
 <div class="pagination">
-    {{ macros.pagination_widget(pagination, '.user', username=user.username) }}
+    {{ render_pagination(pagination, '.user', username=user.username) }}
 </div>
 {% endif %}
 {% endblock %}

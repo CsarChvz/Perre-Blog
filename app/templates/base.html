@@ -1,59 +1,51 @@
-{% extends "bootstrap/base.html" %}
- {% block title %}Flasky{% endblock %} 
-{%block navbar %}
-<div class="navbar navbar-inverse" role="navigation">
-  <div class="container">
-    <div class="navbar-header">
-      <button
-        type="button"
-        class="navbar-toggle"
-        data-toggle="collapse"
-        data-target=".navbar-collapse"
-      >
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="/">Flasky</a>
-    </div>
-    <div class="navbar-collapse collapse">
-      <ul class="nav navbar-nav">
-        <li><a href="/">Home</a></li>
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
-        {% if current_user.is_authenticated %}
-        <li><a href="{{ url_for('auth.logout') }}">Log Out</a></li>
-        {% else %}
-        <li><a href="{{ url_for('auth.login') }}">Log In</a></li>
-        {% endif %}
-        <li>
-          <a href="{{ url_for('main.user', username=current_user.username) }}">
-          Profile
-          </a>
-        </li>
-        {% if current_user.can(Permission.MODERATE) %}
-          <li><a href="{{ url_for('main.moderate') }}">Moderate Comments</a></li>
-        {% endif %}
-        </ul>
-    </div>
-  </div>
-</div>
-{% endblock %} 
-{% block content %}
-<div class="container">
-{% for message in get_flashed_messages() %}
-<div class="alert alert-warning">
-<button type="button" class="close" data-dismiss="alert">&times;</button>
-{{ message }}
-</div>
-{% endfor %}
-{% block page_content %}{% endblock %}
-</div>
-{% endblock %}
+{% from 'bootstrap4/nav.html' import render_nav_item %}
+{% from 'bootstrap4/nav.html' import render_breadcrumb_item %}
+{% from 'bootstrap4/utils.html' import render_messages %}
+<!doctype html>
+<html lang="en">
+    <head>
+        {% block head %}
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-{% block scripts %}
-{{ super() }}
-{{ moment.include_moment() }}
-{{ moment.locale('es') }}
-{% endblock %}
+        {% block styles %}
+            <!-- Bootstrap CSS -->
+            {{ bootstrap.load_css() }}
+        {% endblock %}
+
+        <title>Your page title</title>
+        {% endblock %}
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="navbar-nav mr-auto">
+                {{ render_nav_item('main.index', 'Home') }}
+            </div>
+            <div class="nav navbar-nav-navbar-right">
+                {% if current_user.is_authenticated %}
+                    {{ render_nav_item('.user', 'Profile', username=current_user.username) }}
+                    {{ render_nav_item('auth.logout', 'Logout') }}
+                {% else %}
+                    {{ render_nav_item('auth.login', 'Login') }}
+                    {{ render_nav_item('auth.register', 'Register') }}
+                {% endif %}
+            </div>
+        </nav>
+        <div class="container">
+            {{ render_messages() }}
+        </div>
+        <div class="container py-5">
+            <!-- Your page content -->
+            {% block page_content %}
+            {% endblock %}
+        </div>
+
+        {% block scripts %}
+            <!-- Optional JavaScript -->
+            {{ moment.include_moment() }}
+            {{ moment.locale('es') }}
+            {{ bootstrap.load_js() }}
+        {% endblock %}
+    </body>
+</html>

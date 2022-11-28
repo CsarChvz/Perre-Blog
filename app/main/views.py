@@ -1,7 +1,7 @@
 from datetime import datetime
 from flask import render_template, session, redirect, url_for, flash, abort, request, current_app, make_response
 from . import main
-from .forms import NameForm, EditProfileForm, EditProfileAdminForm, PostForm, CommentForm
+from .forms import NameForm, EditProfileForm, EditProfileAdminForm, PostForm, CommentForm, FollowForm
 from .. import db
 from flask_login import login_required, current_user
 from ..models import User, Role, Post, Permission, Comment
@@ -34,6 +34,7 @@ def index():
 @main.route('/user/<username>')
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
+    form = FollowForm()
     page = request.args.get('page', 1, type=int)
     pagination = user.posts.order_by(Post.timestamp.desc()).paginate(
         page=page, per_page=20,
@@ -43,7 +44,7 @@ def user(username):
         abort(404)
     posts = user.posts.order_by(Post.timestamp.desc()).all()
     print(posts)
-    return render_template('user.html', user=user,posts=posts, pagination=pagination)
+    return render_template('user.html', user=user,posts=posts, pagination=pagination, form=form)
 
 
 @main.route('/edit-profile', methods=['GET', 'POST'])
@@ -241,5 +242,5 @@ def moderate_disable(id):
     comment.disabled = True
     db.session.add(comment)
     db.session.commit()
-    return redirect(url_for('.moderate',
-                            page=request.args.get('page', 1, type=int)))
+    return redirect(url_for('.moderate', page=request.args.get('page', 1, type=int)))
+

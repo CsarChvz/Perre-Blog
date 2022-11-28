@@ -1,5 +1,5 @@
 from flask import Flask, render_template
-from flask_bootstrap import Bootstrap
+from flask_bootstrap import Bootstrap4
 from flask_mail import Mail
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
@@ -7,7 +7,7 @@ from config import config
 from flask_login import LoginManager
 from flask_pagedown import PageDown
 
-bootstrap = Bootstrap()
+bootstrap = Bootstrap4()
 mail = Mail()
 moment = Moment()
 db = SQLAlchemy()
@@ -33,5 +33,8 @@ def create_app(config_name):
 
     from .auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
+
+    from .admin import admin as admin_blueprint
+    app.register_blueprint(admin_blueprint, url_prefix='/admin')
     
     return app

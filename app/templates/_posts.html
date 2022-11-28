@@ -1,3 +1,6 @@
+{% from 'bootstrap4/nav.html' import render_breadcrumb_item %}
+
+
 <ul class="posts">
     {% for post in posts %}
     <li class="post">
@@ -19,19 +22,19 @@
             <div class="post-footer">
                 {% if current_user == post.author %}
                 <a href="{{ url_for('.edit', id=post.id) }}">
-                    <span class="label label-primary">Edit</span>
+                    <span class="btn btn-dark">Edit</span>
                 </a>
                 {% elif current_user.is_administrator() %}
                 <a href="{{ url_for('.edit', id=post.id) }}">
-                    <span class="label label-danger">Edit [Admin]</span>
+                    <span class="btn btn-danger">Edit [Admin]</span>
                 </a>
                 {% endif %}
                 <a href="{{ url_for('.post', id=post.id) }}">
-                    <span class="label label-default">Permalink</span>
+                    <span class="btn btn-secondary">Permalink</span>
                 </a>
             </div>
             <a href="{{ url_for('.post', id=post.id) }}#comments">
-                <span class="label label-primary">
+                <span class="btn btn-primary my-2">
                 {{ post.comments.count() }} Comments
                 </span>
             </a>

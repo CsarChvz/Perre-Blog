@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
+{% import "bootstrap/form.html" as wtf %}
 {% block title %}Editar perfi{% endblock %}
 {% block page_content %}
 <div class="page-header">
 <h1>Editar Perfil</h1>
 </div>
 <div class="col-md-4">
-    {{ wtf.quick_form(form) }}
+    {{ wtf.render_form(form) }}
 </div>
 {% endblock %}
